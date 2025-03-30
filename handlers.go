@@ -8,11 +8,16 @@ import (
 )
 
 type Handler struct {
-	storage map[string]string
+	Storage map[string]string
 }
 
-type User struct {
+type UserReq struct {
 	Name string `json:"name,required"`
+}
+type UserResp struct {
+	Message string  `json:"message,required"`
+	Uuid    string  `json:"uuid,required"`
+	Name    *string `json:"name,required"`
 }
 
 func NewHandler(storage map[string]string) *Handler {
@@ -22,26 +27,37 @@ func NewHandler(storage map[string]string) *Handler {
 func (h *Handler) GetUser() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		userUuid := c.Param("uuid")
-		name, ok := h.storage[userUuid]
+		name, ok := h.Storage[userUuid]
+
 		if ok {
-			c.JSON(http.StatusOK, gin.H{"message": "user exists", "uuid": userUuid, "name": name})
+			r := &UserResp{
+				Message: "user exists",
+				Uuid:    userUuid,
+				Name:    &name,
+			}
+			c.JSON(http.StatusOK, r)
 			return
 		} else {
-			c.JSON(http.StatusNotFound, gin.H{"message": "not found", "uuid": userUuid})
+			r := &UserResp{
+				Message: "not found",
+				Uuid:    userUuid,
+				Name:    nil,
+			}
+			c.JSON(http.StatusNotFound, r)
 		}
 	}
 }
 
 func (h *Handler) CreateUser() func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var user User
+		var user UserReq
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		userUuid := uuid.New().String()
-		h.storage[userUuid] = user.Name
-		name, ok := h.storage[userUuid]
+		h.Storage[userUuid] = user.Name
+		name, ok := h.Storage[userUuid]
 
 		if !ok {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"message": "recording error", "uuid": userUuid})
@@ -53,12 +69,17 @@ func (h *Handler) CreateUser() func(c *gin.Context) {
 
 func (h *Handler) ChangeUser() func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var user User
+		var user UserReq
 		userUuid := c.Param("uuid")
-		_, ok := h.storage[userUuid]
+		_, ok := h.Storage[userUuid]
 
 		if !ok {
-			c.JSON(http.StatusNotFound, gin.H{"message": "user not found", "uuid": userUuid})
+			r := &UserResp{
+				Message: "user not found",
+				Uuid:    userUuid,
+				Name:    nil,
+			}
+			c.JSON(http.StatusNotFound, r)
 			return
 		}
 		if err := c.ShouldBindJSON(&user); err != nil {
@@ -72,14 +93,19 @@ func (h *Handler) ChangeUser() func(c *gin.Context) {
 		}
 		mu := &sync.Mutex{}
 		mu.Lock()
-		h.storage[userUuid] = user.Name
+		h.Storage[userUuid] = user.Name
 		mu.Unlock()
-		name, ok := h.storage[userUuid]
+		name, ok := h.Storage[userUuid]
 
 		if !ok {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"message": "recording error", "uuid": userUuid})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "user data changed", "uuid": userUuid, "name": name})
+		r := &UserResp{
+			Message: "user data changed",
+			Uuid:    userUuid,
+			Name:    &name,
+		}
+		c.JSON(http.StatusOK, r)
 	}
 }
