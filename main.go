@@ -2,36 +2,52 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
 	"time"
-	users "user-service"
+	"user-service/docs"
+	"user-service/handlers"
 )
 
-var storage = make(map[string]string)
-
-func router(h *users.Handler) *gin.Engine {
+func router(h *handlers.Handler) *gin.Engine {
 	r := gin.Default()
+	docs.SwaggerInfo.Title = "Users service"
+	docs.SwaggerInfo.Description = "This is a sample users service"
+	docs.SwaggerInfo.Version = "1.0"
 
 	r.GET("/users/:uuid", h.GetUser())
-
 	r.POST("/users", h.CreateUser())
-
 	r.PUT("/users/:uuid", h.ChangeUser())
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
 }
 
 func main() {
-	handler := users.NewHandler(storage)
+	env := LoadEnv()
+
+	db, err := sql.Open("postgres", env.Db.Dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("failed connect to db", err)
+	}
+	handler := handlers.NewHandler(db)
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%s", env.App.Port),
 		Handler: router(handler),
 	}
 

@@ -1,0 +1,25 @@
+services:
+
+  postgres:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    container_name: users_postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_DEV}
+      POSTGRES_USER: ${POSTGRES_USER_DEV}
+      POSTGRES_DB: ${POSTGRES_DB_DEV}
+    ports:
+      - "${POSTGRES_PORT_DEV}:5432"
+    volumes:
+      - postgres:/data/postgres
+  adminer:
+    image: adminer
+    container_name: users_adminer
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+volumes:
+  postgres:
