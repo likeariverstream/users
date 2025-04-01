@@ -1,8 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "A users service API in Go using Gin framework",
+        "title": "Users service",
+        "contact": {},
+        "version": "1.0"
     },
+    "basePath": "/",
     "paths": {
         "/users": {
             "post": {
@@ -24,7 +28,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UserReq"
+                            "$ref": "#/definitions/handlers.CrUserReq"
                         }
                     }
                 ],
@@ -119,7 +123,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UserReq"
+                            "$ref": "#/definitions/handlers.ChUserReq"
                         }
                     }
                 ],
@@ -147,7 +151,18 @@
         }
     },
     "definitions": {
-        "handlers.UserReq": {
+        "handlers.ChUserReq": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.CrUserReq": {
             "type": "object",
             "required": [
                 "email",

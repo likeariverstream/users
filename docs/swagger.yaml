@@ -1,5 +1,13 @@
+basePath: /
 definitions:
-  handlers.UserReq:
+  handlers.ChUserReq:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  handlers.CrUserReq:
     properties:
       email:
         type: string
@@ -22,6 +30,9 @@ definitions:
     type: object
 info:
   contact: {}
+  description: A users service API in Go using Gin framework
+  title: Users service
+  version: "1.0"
 paths:
   /users:
     post:
@@ -34,7 +45,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/handlers.UserReq'
+          $ref: '#/definitions/handlers.CrUserReq'
       produces:
       - application/json
       responses:
@@ -97,7 +108,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/handlers.UserReq'
+          $ref: '#/definitions/handlers.ChUserReq'
       produces:
       - application/json
       responses:

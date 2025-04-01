@@ -14,16 +14,13 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"user-service/docs"
+	_ "user-service/docs"
+	"user-service/environment"
 	"user-service/handlers"
 )
 
 func router(h *handlers.Handler) *gin.Engine {
 	r := gin.Default()
-	docs.SwaggerInfo.Title = "Users service"
-	docs.SwaggerInfo.Description = "This is a sample users service"
-	docs.SwaggerInfo.Version = "1.0"
-
 	r.GET("/users/:uuid", h.GetUser())
 	r.POST("/users", h.CreateUser())
 	r.PUT("/users/:uuid", h.ChangeUser())
@@ -32,9 +29,14 @@ func router(h *handlers.Handler) *gin.Engine {
 	return r
 }
 
-func main() {
-	env := LoadEnv()
+//	@title			Users service
+//	@version		1.0
+//	@description	A users service API in Go using Gin framework
 
+//	@BasePath	/
+
+func main() {
+	env := environment.LoadEnv()
 	db, err := sql.Open("postgres", env.Db.Dsn)
 	if err != nil {
 		log.Fatal(err)

@@ -1,4 +1,4 @@
 # migrate
 goose up
 # start
-exec /goapp
+exec /userssrv

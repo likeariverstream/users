@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UserReq"
+                            "$ref": "#/definitions/handlers.CrUserReq"
                         }
                     }
                 ],
@@ -130,7 +130,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UserReq"
+                            "$ref": "#/definitions/handlers.ChUserReq"
                         }
                     }
                 ],
@@ -158,7 +158,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.UserReq": {
+        "handlers.ChUserReq": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.CrUserReq": {
             "type": "object",
             "required": [
                 "email",
@@ -195,12 +206,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Users service",
+	Description:      "A users service API in Go using Gin framework",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

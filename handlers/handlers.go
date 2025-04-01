@@ -16,9 +16,12 @@ type Handler struct {
 	Storage Storage
 }
 
-type UserReq struct {
+type CrUserReq struct {
 	Name  string `json:"name,required" binding:"required"`
 	Email string `json:"email,required" binding:"required,email"`
+}
+type ChUserReq struct {
+	Name string `json:"name,required" binding:"required"`
 }
 type UserResp struct {
 	Message string  `json:"message"`
@@ -35,16 +38,17 @@ func NewHandler(storage *sql.DB) *Handler {
 }
 
 // GetUser godoc
-// @Summary Get user
-// @Description Get user
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param uuid path string true "User uuid"
-// @Success 200 {object} UserResp "Get successfully"
-// @Failure 400 {object} UserResp
-// @Failure 404 {object} UserResp
-// @Router /users/{uuid} [get]
+//
+//	@Summary		Get user
+//	@Description	Get user
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			uuid	path		string		true	"User uuid"
+//	@Success		200		{object}	UserResp	"Get successfully"
+//	@Failure		400		{object}	UserResp
+//	@Failure		404		{object}	UserResp
+//	@Router			/users/{uuid} [get]
 func (h *Handler) GetUser() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		userUuid := c.Param("uuid")
@@ -81,19 +85,20 @@ func (h *Handler) GetUser() func(c *gin.Context) {
 }
 
 // CreateUser godoc
-// @Summary Create user
-// @Description Create user
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param data body UserReq true "User data"
-// @Success 201 {object} UserResp "Create successfully"
-// @Failure 400 {object} UserResp "Bad request"
-// @Failure 422 {object} UserResp "Unprocessable"
-// @Router /users [post]
+//
+//	@Summary		Create user
+//	@Description	Create user
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			data	body		CrUserReq	true	"User data"
+//	@Success		201		{object}	UserResp	"Create successfully"
+//	@Failure		400		{object}	UserResp	"Bad request"
+//	@Failure		422		{object}	UserResp	"Unprocessable"
+//	@Router			/users [post]
 func (h *Handler) CreateUser() func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var user UserReq
+		var user CrUserReq
 		r := &UserResp{
 			Message: "",
 			Uuid:    "",
@@ -123,20 +128,21 @@ func (h *Handler) CreateUser() func(c *gin.Context) {
 }
 
 // ChangeUser godoc
-// @Summary Change user
-// @Description Change user
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Param uuid path string true "User uuid"
-// @Param data body UserReq true "User data"
-// @Success 200 {object} UserResp "Change successfully"
-// @Failure 400 {object} UserResp "Bad request"
-// @Failure 422 {object} UserResp "Unprocessable"
-// @Router /users/{uuid} [put]
+//
+//	@Summary		Change user
+//	@Description	Change user
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			uuid	path		string		true	"User uuid"
+//	@Param			data	body		ChUserReq	true	"User data"
+//	@Success		200		{object}	UserResp	"Change successfully"
+//	@Failure		400		{object}	UserResp	"Bad request"
+//	@Failure		422		{object}	UserResp	"Unprocessable"
+//	@Router			/users/{uuid} [put]
 func (h *Handler) ChangeUser() func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var user UserReq
+		var user ChUserReq
 		userUuid := c.Param("uuid")
 		if err := c.ShouldBindUri(&Param{
 			uuid: userUuid,
@@ -153,13 +159,6 @@ func (h *Handler) ChangeUser() func(c *gin.Context) {
 			Email:   nil,
 		}
 		if err := c.ShouldBindJSON(&user); err != nil {
-			r.Message = err.Error()
-			r.Name = &user.Name
-			c.JSON(http.StatusBadRequest, r)
-			return
-		}
-
-		if user.Name == "" {
 			r.Message = "name field is required"
 			c.JSON(http.StatusBadRequest, r)
 			return

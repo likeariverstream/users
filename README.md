@@ -1,16 +1,57 @@
-Разработать REST API на Go для создания, редактирования и удаления пользователей.
+## Users service
+
+### Start:
+
+Create .env file
+
+.env file example:
+```
+APP_PORT=4000
+POSTGRES_PASSWORD=example
+POSTGRES_USER=user
+POSTGRES_DB=users
+POSTGRES_PORT=5433
+ADMINER_PORT=8080
+GOOSE_DRIVER=postgres
+GOOSE_DBSTRING=postgres://user:example@postgres:5432/users
+GOOSE_MIGRATION_DIR=./migrations
+DB_DATA_SOURCE_NAME=postgres://user:example@postgres:5432/users?sslmode=disable
+```
+
+```shell
+ docker-compose up -d
+ ```
+Swagger:
+
+/swagger/index.html
+
+Adminer server:
+
+`users_postgres`
+
+### Developing:
+
+Create .env file
+
+Install dependencies
+
+PostgreSQL start:
+```shell
+ docker-compose -f docker-compose.dev.yml up -d
+ ```
+Adminer server `users_postgres`
+
 Testing:
 
 ```go test -v```
 
-Для разработки: 
-```shell
- docker-compose -f docker-compose.dev.yml up -d
- ```
-Хост для adminer `users_postgres`
+Swagger generate:
+
+```swag init -g main.go```
 
 Migrations:
 [Goose](https://github.com/pressly/goose)
+
 Driver:
 
 ```shell
@@ -37,18 +78,3 @@ Current DB version:
   goose version
 ```
 
-Framework на ваше усмотрение (можно без него);
-
-Использовать PostgreSQL;
-
-Разместить проект на GitHub.
-
-Архитектура, тесты, контейнеризация.
-
-Методы API:
-
-POST /users – создать пользователя
-
-GET /users/ – получить информацию о пользователе
-
-PUT /users/ – обновить данные пользователя
