@@ -1,0 +1,119 @@
+definitions:
+  handlers.UserReq:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  handlers.UserResp:
+    properties:
+      email:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      uuid:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create user
+      parameters:
+      - description: User data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Create successfully
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+        "422":
+          description: Unprocessable
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+      summary: Create user
+      tags:
+      - Users
+  /users/{uuid}:
+    get:
+      consumes:
+      - application/json
+      description: Get user
+      parameters:
+      - description: User uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get successfully
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+      summary: Get user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Change user
+      parameters:
+      - description: User uuid
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: User data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Change successfully
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+        "422":
+          description: Unprocessable
+          schema:
+            $ref: '#/definitions/handlers.UserResp'
+      summary: Change user
+      tags:
+      - Users
+swagger: "2.0"

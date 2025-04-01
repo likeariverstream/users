@@ -29,11 +29,3 @@ func LoadEnv() *Env {
 
 	return env
 }
-
-func getEnv(key string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-
-	panic("Environment variable " + key + " is not set")
-}
